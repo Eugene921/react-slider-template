@@ -29,14 +29,25 @@ class Slider extends React.Component {
 
   constructor(props) {
     super(props);
+    this.sliderAspectRatio = props.sliderAspectRatio;
+    this.length = props.slides.length;
 
     this.state = {
       activeSlideIndex: props.activeSlideIndex, // position of showed slide
+      width: props.width,
+      height: props.height || Slider.getHeigth(props.width, this.sliderAspectRatio),
     };
 
-    this.width = props.width;
-    this.height = props.height || Slider.getHeigth(props.width, props.sliderAspectRatio);
-    this.length = props.slides.length;
+    this.init();
+  }
+
+  activeAutoResize() {
+    window.addEventListener('resize', (e) => {
+      const width = e.target.innerWidth;
+      const height = Slider.getHeigth(width, this.sliderAspectRatio);
+
+      this.setState({ width, height });
+    });
   }
 
   goTo(index) {
@@ -46,16 +57,22 @@ class Slider extends React.Component {
     this.setState({ activeSlideIndex: index });
   }
 
+  init() {
+    const { autoResizeSlider } = this.props;
+
+    if (autoResizeSlider) this.activeAutoResize();
+  }
+
   render() {
-    const { activeSlideIndex } = this.state;
+    const { activeSlideIndex, width, height } = this.state;
     const { pagerStyle, slides, controls, controlsStopAtLast, pager } = this.props;
 
     return (
       <div
         className="slider"
         style={{
-          height: this.height,
-          width: this.width,
+          height,
+          width,
         }}
       >
         <div
@@ -98,6 +115,7 @@ Slider.propTypes = {
   sliderAspectRatio: PropTypes.string,
   controls: PropTypes.bool,
   controlsStopAtLast: PropTypes.bool,
+  autoResizeSlider: PropTypes.bool,
 };
 
 Slider.defaultProps = {
@@ -110,6 +128,7 @@ Slider.defaultProps = {
   sliderAspectRatio: '16:9',
   controls: true,
   controlsStopAtLast: true, // cen be slideLine and slideCircle
+  autoResizeSlider: true,
 };
 
 ReactDom.render(<Slider slides={[i1, i2, i3, i4]} />, document.getElementById('root'));

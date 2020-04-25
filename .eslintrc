@@ -1,0 +1,38 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["airbnb", "prettier"],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "plugins": ["prettier", "react", "react-hooks"],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "prettier/prettier": "error",
+    "semi": ["error", "always"],
+    "quotes": ["warn", "single"],
+    "no-underscore-dangle": 0,
+    "import/extensions": 0,
+    "import/no-unresolved": 0,
+    "import/prefer-default-export": 1,
+    "no-restricted-syntax": 0,
+    "guard-for-in": 1,
+    "no-bitwise": 0,
+    "no-continue": 0,
+    "prefer-destructuring": 0,
+    "no-restricted-globals": 0,
+    "prefer-promise-reject-errors": 0,
+    "no-mixed-operators": 0,
+    "react/jsx-no-bind": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}

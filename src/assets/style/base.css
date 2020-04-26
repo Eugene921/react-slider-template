@@ -35,8 +35,8 @@
   transition: inherit;
   width: 100%;
   list-style: none;
-  position: relative;
-  bottom: 30px;
+  position: absolute;
+  bottom: 10px;
   margin: auto;
   align-items: center;
   display: flex;

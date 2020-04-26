@@ -1,23 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Controls = ({ controlsStopAtLast, onChangeActiveIndex, activeIndex, length }) => {
-  const goToNext = () => {
-    if (controlsStopAtLast && activeIndex + 1 >= length) return;
-
-    const index = activeIndex + 1 >= length ? 0 : activeIndex + 1;
-
-    onChangeActiveIndex(index);
-  };
-
-  const goToPre = () => {
-    if (controlsStopAtLast && activeIndex - 1 < 0) return;
-
-    const index = activeIndex - 1 < 0 ? length - 1 : activeIndex - 1;
-
-    onChangeActiveIndex(index);
-  };
-
+const Controls = ({ controlsStopAtLast, goToPre, goToNext, activeIndex, length }) => {
   return (
     <>
       <button
@@ -43,7 +27,8 @@ const Controls = ({ controlsStopAtLast, onChangeActiveIndex, activeIndex, length
 Controls.propTypes = {
   activeIndex: PropTypes.number.isRequired,
   length: PropTypes.number.isRequired,
-  onChangeActiveIndex: PropTypes.func.isRequired,
+  goToPre: PropTypes.func.isRequired,
+  goToNext: PropTypes.func.isRequired,
   controlsStopAtLast: PropTypes.bool.isRequired,
 };
 

@@ -7,17 +7,12 @@ import './assets/style/base.css';
 // import Settings from './setings';
 import Controls from './components/controls';
 import Pager from './components/pager';
+import SlidesArr from './components/slides_arr';
 
 import i1 from './assets/images/lake_and_pull.jpg';
 import i2 from './assets/images/night_fire.jpg';
 import i3 from './assets/images/star_light.jpg';
 import i4 from './assets/images/3.jpeg';
-
-const SlidesArr = ({ style, slides }) => {
-  return slides.map((slide, i) => {
-    return <div style={{ ...style, backgroundImage: `url(${slide})` }} className="slide" key={i.toString()} />;
-  });
-};
 
 class Slider extends React.Component {
   static getHeigth(width, aspectRatio) {
@@ -29,47 +24,123 @@ class Slider extends React.Component {
 
   constructor(props) {
     super(props);
+
+    this.sliderRef = React.createRef();
     this.sliderAspectRatio = props.sliderAspectRatio;
     this.length = props.slides.length;
+    this.controlsStopAtLast = props.controlsStopAtLast;
 
     this.state = {
-      activeSlideIndex: props.activeSlideIndex, // position of showed slide
+      activeSlideIndex: props.activeSlideIndex,
       width: props.width,
       height: props.height || Slider.getHeigth(props.width, this.sliderAspectRatio),
     };
-
-    this.init();
   }
 
-  activeAutoResize() {
-    window.addEventListener('resize', (e) => {
-      const width = e.target.innerWidth;
-      const height = Slider.getHeigth(width, this.sliderAspectRatio);
+  componentDidMount() {
+    const { autoResize, moveSwipeAction } = this.props;
 
-      this.setState({ width, height });
-    });
+    if (autoResize) this._addAutoResize();
+    if (moveSwipeAction) {
+      this._setListenerSwipe({
+        listeningElem: this.sliderRef.current,
+        rightSwipeFunc: () => this.goToNext(),
+        leftSwipeFunc: () => this.goToPre(),
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { autoResize, moveSwipeAction } = this.props;
+
+    if (autoResize) this.autoResize.remove();
+    if (moveSwipeAction) this.listenerSwipe.remove();
+  }
+
+  _addAutoResize() {
+    this.autoResize = {
+      isActive: true,
+      setSizes: (event) => {
+        const width = event.target.innerWidth;
+        const height = Slider.getHeigth(width, this.sliderAspectRatio);
+
+        this.setState({ width, height });
+      },
+      add: () => window.addEventListener('resize', this.autoResize.setSizes),
+      remove: () => window.removeEventListener('resize', this.autoResize.setSizes),
+    };
+    this.autoResize.add();
   }
 
   goTo(index) {
     if (isNaN(index) || typeof index !== 'number') return;
-    if (index >= this.length) return;
+    if (index >= this.length || index < 0) return;
 
     this.setState({ activeSlideIndex: index });
   }
 
-  init() {
-    const { autoResizeSlider } = this.props;
+  _setListenerSwipe({ listeningElem, leftSwipeFunc, rightSwipeFunc }) {
+    this.listenerSwipe = {
+      touchStartPosition: 0,
+      isListening: false,
 
-    if (autoResizeSlider) this.activeAutoResize();
+      _touchStart: () => {
+        this.listenerSwipe.touchStartPosition = event.changedTouches[0].pageX;
+      },
+      _touchEnd: () => {
+        const endPosition = event.changedTouches[0].pageX;
+        const swipeLength = this.listenerSwipe.touchStartPosition - endPosition;
+
+        if (swipeLength > 50) rightSwipeFunc(); // function move right
+
+        if (swipeLength < -50) leftSwipeFunc(); // function move right
+      },
+      remove: () => {
+        if (!this.listenerSwipe.isListening) return;
+
+        listeningElem.removeEventListener('touchstart', this.listenerSwipe._touchStart);
+        listeningElem.removeEventListener('touchend', this.listenerSwipe._touchEnd);
+
+        this.listenerSwipe.isListening = false;
+      },
+      add: () => {
+        if (this.listenerSwipe.isListening) return;
+
+        listeningElem.addEventListener('touchstart', this.listenerSwipe._touchStart, { passive: true });
+        listeningElem.addEventListener('touchend', this.listenerSwipe._touchEnd, { passive: true });
+
+        this.listenerSwipe.isListening = true;
+      },
+    };
+    this.listenerSwipe.add();
+  }
+
+  goToNext() {
+    const { activeSlideIndex } = this.state;
+
+    if (this.controlsStopAtLast && activeSlideIndex + 1 >= this.length) return;
+    const index = activeSlideIndex + 1 >= this.length ? 0 : activeSlideIndex + 1;
+
+    this.goTo(index);
+  }
+
+  goToPre() {
+    const { activeSlideIndex } = this.state;
+
+    if (this.controlsStopAtLast && activeSlideIndex - 1 < 0) return;
+    const index = activeSlideIndex - 1 < 0 ? this.length - 1 : activeSlideIndex - 1;
+
+    this.goTo(index);
   }
 
   render() {
     const { activeSlideIndex, width, height } = this.state;
-    const { pagerStyle, slides, controls, controlsStopAtLast, pager } = this.props;
+    const { pagerStyle, slides, controls, pager } = this.props;
 
     return (
       <div
         className="slider"
+        ref={this.sliderRef}
         style={{
           height,
           width,
@@ -82,7 +153,7 @@ class Slider extends React.Component {
             width: `${this.length}00%`,
           }}
         >
-          <SlidesArr activeSlideIndex={activeSlideIndex} slides={slides} />
+          <SlidesArr slides={slides} />
         </div>
         {pager && (
           <Pager
@@ -94,9 +165,10 @@ class Slider extends React.Component {
         )}
         {controls && (
           <Controls
-            controlsStopAtLast={controlsStopAtLast}
-            onChangeActiveIndex={(i) => this.goTo(i)}
+            controlsStopAtLast={this.controlsStopAtLast}
+            goToPre={() => this.goToPre()}
             activeIndex={activeSlideIndex}
+            goToNext={() => this.goToNext()}
             length={this.length}
           />
         )}
@@ -115,7 +187,8 @@ Slider.propTypes = {
   sliderAspectRatio: PropTypes.string,
   controls: PropTypes.bool,
   controlsStopAtLast: PropTypes.bool,
-  autoResizeSlider: PropTypes.bool,
+  autoResize: PropTypes.bool,
+  moveSwipeAction: PropTypes.bool,
 };
 
 Slider.defaultProps = {
@@ -128,7 +201,8 @@ Slider.defaultProps = {
   sliderAspectRatio: '16:9',
   controls: true,
   controlsStopAtLast: true, // cen be slideLine and slideCircle
-  autoResizeSlider: true,
+  autoResize: false,
+  moveSwipeAction: true,
 };
 
 ReactDom.render(<Slider slides={[i1, i2, i3, i4]} />, document.getElementById('root'));

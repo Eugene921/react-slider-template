@@ -4,6 +4,7 @@
 }
 
 .slider {
+  font-size: 20px;
   overflow: hidden;
   padding: 0;
   margin: 0 auto;
@@ -36,7 +37,7 @@
   width: 100%;
   list-style: none;
   position: absolute;
-  bottom: 10px;
+  bottom: 1em;
   margin: auto;
   align-items: center;
   display: flex;
@@ -46,23 +47,23 @@
 
 .dot {
   cursor: pointer;
-  height: 12px;
-  width: 12px;
-  margin: 3px;
-  border: 2px solid var(--controls);
+  height: 0.8em;
+  width: 0.8em;
+  margin: 0.2em;
+  border: 0.15em solid var(--controls);
   border-radius: 50%;
 }
 
 .pager_dot_a {
-  background-image: radial-gradient(var(--controls) 50%, transparent 50%);
+  background-image: radial-gradient(var(--controls) 40%, transparent 40%);
 }
 
 .controls {
   transition: inherit;
   position: absolute;
-  font-size: 40px;
-  line-height: 40px;
-  top: calc(50% - 20px);
+  font-size: 2em;
+  line-height: 2em;
+  top: calc(50% - 1em);
   color: var(--controls);
   outline: none;
   cursor: pointer;
@@ -71,9 +72,9 @@
 }
 
 .controls_left {
-  left: 25px;
+  left: 0.5em;
 }
 
 .controls_right {
-  right: 25px;
+  right: 0.5em;
 }

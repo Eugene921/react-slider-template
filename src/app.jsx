@@ -15,25 +15,60 @@ import i3 from './assets/images/star_light.jpg';
 import i4 from './assets/images/3.jpeg';
 
 class Slider extends React.Component {
-  static getHeigth(width, aspectRatio) {
+  static calculateAspectRatio({ width, height, aspectRatio }) {
     const numerator = aspectRatio.split(':')[0];
     const denominator = aspectRatio.split(':')[1];
 
-    return (width / numerator) * denominator;
+    if (width) return (width / numerator) * denominator;
+    if (height) return (height / denominator) * numerator;
+
+    return null;
   }
 
   constructor(props) {
     super(props);
+    // if( props.alignHeight && props.alignWidth ) throw Error('You have aling o');
 
     this.sliderRef = React.createRef();
     this.sliderAspectRatio = props.sliderAspectRatio;
     this.length = props.slides.length;
     this.controlsStopAtLast = props.controlsStopAtLast;
+    this._alignType = (() => {
+      if (props.verticalAlign && props.horizontalAlign) return 'fullScreen';
+      if (props.verticalAlign) return 'vertical';
+      if (props.horizontalAlign) return 'horizontal';
+      return null;
+    })();
+
+    let width;
+    let height;
+
+    switch (this._alignType) {
+      case 'fullScreen':
+        width = window.innerWidth;
+        height = window.innerHeight;
+        break;
+
+      case 'vertical':
+        height = props.height || window.innerHeight;
+        width = Slider.calculateAspectRatio({ height, aspectRatio: this.sliderAspectRatio });
+        break;
+
+      case 'horizontal':
+        width = props.width || window.innerWidth;
+        height = Slider.calculateAspectRatio({ width, aspectRatio: this.sliderAspectRatio });
+        break;
+
+      default:
+        width = props.width;
+        height = props.height;
+        break;
+    }
 
     this.state = {
       activeSlideIndex: props.activeSlideIndex,
-      width: props.width,
-      height: props.height || Slider.getHeigth(props.width, this.sliderAspectRatio),
+      width,
+      height,
     };
   }
 
@@ -58,16 +93,56 @@ class Slider extends React.Component {
   }
 
   _addAutoResize() {
+    const { width: maxWidth, height: maxHeight } = this.props;
+
     this.autoResize = {
       isActive: true,
-      setSizes: (event) => {
-        const width = event.target.innerWidth;
-        const height = Slider.getHeigth(width, this.sliderAspectRatio);
+      _setSizes: (() => {
+        switch (this._alignType) {
+          case 'fullScreen':
+            return (event) => {
+              const width = event.target.innerWidth;
+              const height = event.target.innerHeight;
 
-        this.setState({ width, height });
-      },
-      add: () => window.addEventListener('resize', this.autoResize.setSizes),
-      remove: () => window.removeEventListener('resize', this.autoResize.setSizes),
+              this.setState({ width, height });
+            };
+
+          case 'vertical':
+            return (event) => {
+              const { innerHeight } = event.target;
+              let height = innerHeight;
+              if (maxHeight) height = innerHeight > maxHeight ? maxHeight : innerHeight;
+
+              const width = Slider.calculateAspectRatio({ height, aspectRatio: this.sliderAspectRatio });
+
+              this.setState({ width, height });
+            };
+
+          case 'horizontal':
+            return (event) => {
+              const { innerWidth } = event.target;
+              let width = innerWidth;
+              if (maxWidth) width = innerWidth > maxWidth ? maxWidth : innerWidth;
+
+              const height = Slider.calculateAspectRatio({ width, aspectRatio: this.sliderAspectRatio });
+
+              this.setState({ width, height });
+            };
+
+          default:
+            return (event) => {
+              const { innerHeight, innerWidth } = event.target;
+              let width = innerWidth;
+              let height = innerHeight;
+              if (maxHeight) height = innerHeight > maxHeight ? maxHeight : innerHeight;
+              if (maxWidth) width = innerWidth > maxWidth ? maxWidth : innerWidth;
+
+              this.setState({ width, height });
+            };
+        }
+      })(),
+      add: () => window.addEventListener('resize', this.autoResize._setSizes),
+      remove: () => window.removeEventListener('resize', this.autoResize._setSizes),
     };
     this.autoResize.add();
   }
@@ -184,6 +259,8 @@ Slider.propTypes = {
   pagerStyle: PropTypes.objectOf(PropTypes.string),
   width: PropTypes.number,
   height: PropTypes.number,
+  verticalAlign: PropTypes.bool,
+  horizontalAlign: PropTypes.bool,
   sliderAspectRatio: PropTypes.string,
   controls: PropTypes.bool,
   controlsStopAtLast: PropTypes.bool,
@@ -192,16 +269,26 @@ Slider.propTypes = {
 };
 
 Slider.defaultProps = {
-  slides: [],
-  activeSlideIndex: 2,
-  pager: true,
-  pagerStyle: {},
-  height: 0,
-  width: window.innerWidth,
+  slides: [], // arr images for slider.
+  activeSlideIndex: 2, // it slide slide will be showed first, count started at 0.
+  pager: true, // mark of availability pager, if true pager will be showed.
+  pagerStyle: {}, // there can change styles for pager
+
+  verticalAlign: false, // if turn on slider will be scale on vertical line
+  //                       if set width with verticalAlign, width will be ignore
+  height: 500, // defoult height for slider if verticalAlign turn on it will be maxHeight
+
+  horizontalAlign: false, // if turn on slider will be scale on horizontal line
+  //                        if set height with horizontalAlignit, height will be ignore
+  width: 500, // defoult width for slider if horizontalAlign turn on it will be maxWidth
+
+  // if pass verticalAlign and horizontalAlign true slider will scale on full screen
+  // 🚨height and width will be ignore.
+
   sliderAspectRatio: '16:9',
   controls: true,
   controlsStopAtLast: true, // cen be slideLine and slideCircle
-  autoResize: false,
+  autoResize: true,
   moveSwipeAction: true,
 };
 

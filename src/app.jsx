@@ -270,23 +270,23 @@ Slider.propTypes = {
 
 Slider.defaultProps = {
   slides: [], // arr images for slider.
-  activeSlideIndex: 2, // it slide slide will be showed first, count started at 0.
-  pager: true, // mark of availability pager, if true pager will be showed.
+  activeSlideIndex: 2, // it slide will be shown first, count start at 0.
+  pager: true, // Mark of pager availability. If mark true pager will be show.
   pagerStyle: {}, // there can change styles for pager
 
   verticalAlign: false, // if turn on slider will be scale on vertical line
   //                       if set width with verticalAlign, width will be ignore
-  height: 500, // defoult height for slider if verticalAlign turn on it will be maxHeight
+  height: 0, // defoult height for slider if verticalAlign turn on it will be maxHeight
 
-  horizontalAlign: false, // if turn on slider will be scale on horizontal line
+  horizontalAlign: true, // if turn on slider will be scale on horizontal line
   //                        if set height with horizontalAlignit, height will be ignore
-  width: 500, // defoult width for slider if horizontalAlign turn on it will be maxWidth
+  width: 0, // defoult width for slider if horizontalAlign turn on it will be maxWidth
 
   // if pass verticalAlign and horizontalAlign true slider will scale on full screen
   // 🚨height and width will be ignore.
 
-  sliderAspectRatio: '16:9',
-  controls: true,
+  sliderAspectRatio: '16:9', // If you wona make
+  controls: true, // Mark of controls availability. If mark true controls will be show.
   controlsStopAtLast: true, // cen be slideLine and slideCircle
   autoResize: true,
   moveSwipeAction: true,

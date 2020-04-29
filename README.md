@@ -33,9 +33,11 @@
 ## verticalAlign && horizontalAlign
 
 > If you pass true in two settings slider scale on full screen
-> `width: window.innerWidth, height: window.innerHeight`
-> 🚨 The settings will be ignore `width, height`
+> `width: window.innerWidth, height: window.innerHeight`<br>
+> 🚨The settings will be ignore `width, height`
 
+|          Name          |   Type    |  Required  | Description                                                                                                                                                                  | Default |
+| :--------------------: | :-------: | :--------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
 | **verticalAlign** | `Boolean` | `Optional` | If `true`, slider will be scale on vertical line and 🚨ignore `width`.<br>`height` will become a limitation. If `height` is not passed, it will become `window.innerHeight`<br>   | `false` |
 | **horizontalAlign** | `Boolean` | `Optional` | If `true`, slider will be scale on horizontal line and 🚨ignore `height`.<br>`width` will become a limitation. If `width` is not passed, it will become `window.innerWidth`<br> | `false` |
 

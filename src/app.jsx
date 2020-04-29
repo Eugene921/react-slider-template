@@ -270,7 +270,7 @@ Slider.propTypes = {
 
 Slider.defaultProps = {
   slides: [], // arr images for slider.
-  activeSlideIndex: 2, // it slide will be shown first, count start at 0.
+  activeSlideIndex: 0, // it slide will be shown first, count start at 0.
   pager: true, // Mark of pager availability. If mark true pager will be show.
   pagerStyle: {}, // there can change styles for pager
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDom from 'react-dom';
 import PropTypes from 'prop-types';
 
 import './assets/style/base.css';
@@ -8,11 +7,6 @@ import './assets/style/base.css';
 import Controls from './components/controls';
 import Pager from './components/pager';
 import SlidesArr from './components/slides_arr';
-
-import i1 from './assets/images/lake_and_pull.jpg';
-import i2 from './assets/images/night_fire.jpg';
-import i3 from './assets/images/star_light.jpg';
-import i4 from './assets/images/3.jpeg';
 
 class Slider extends React.Component {
   static calculateAspectRatio({ width, height, aspectRatio }) {
@@ -292,4 +286,4 @@ Slider.defaultProps = {
   moveSwipeAction: true,
 };
 
-ReactDom.render(<Slider slides={[i1, i2, i3, i4]} />, document.getElementById('root'));
+export default Slider;

@@ -4,5 +4,7 @@ node_modules
 .vscode
 *.log
 package-lock.json
+yarn.lock
 .cache
 dist
+coverage

@@ -3,9 +3,10 @@
   "extends": ["airbnb", "prettier"],
   "env": {
     "browser": true,
-    "es6": true
+    "es6": true,
+    "jest/globals": true
   },
-  "plugins": ["prettier", "react", "react-hooks"],
+  "plugins": ["prettier", "react", "react-hooks", "jest"],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
@@ -16,6 +17,7 @@
   "rules": {
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
+    "jsx-a11y/control-has-associated-label": 0,
     "prettier/prettier": "error",
     "semi": ["error", "always"],
     "quotes": ["warn", "single"],
@@ -33,6 +35,12 @@
     "no-mixed-operators": 0,
     "react/jsx-no-bind": 0,
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
   }
 }
